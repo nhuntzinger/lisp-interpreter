@@ -8,40 +8,8 @@ class LispInterpreter(object):
     def __init__(self, path, debug):
         self.path = pathlib.Path.cwd().absolute() / path
         self.debug = debug
-
-        self.numerical_functions = LispFunctions.NumericalFunctions(self)
-        self.control_functions = LispFunctions.ControlFunctions(self)
-        self.boolean_functions = LispFunctions.BooleanFunctions(self)
-        self.list_functions = LispFunctions.ListFunctions(self)
-        self.other_functions = LispFunctions.OtherFunctions(self)
-
         self.log_buffer_cache = {}
-
-        self.functions = {
-            '+': self.numerical_functions.addition,
-            '-': self.numerical_functions.subtraction,
-            '*': self.numerical_functions.multiplication,
-            '/': self.numerical_functions.integer_division,
-            'mod': self.numerical_functions.modulo,
-            'if': self.control_functions.conditional,
-            'not': self.boolean_functions.not_function,
-            'and': self.boolean_functions.and_function,
-            'or': self.boolean_functions.or_function,
-            '=': self.boolean_functions.equals,
-            '/=': self.boolean_functions.not_equals,
-            '<': self.boolean_functions.less_than,
-            '>': self.boolean_functions.greater_than,
-            '<=': self.boolean_functions.less_than_or_equals,
-            '>=': self.boolean_functions.greater_than_or_equals,
-            'car': self.list_functions.car,
-            'cdr': self.list_functions.cdr,
-            'cons': self.list_functions.cons,
-            'last': self.list_functions.last,
-            'reverse': self.list_functions.reverse,
-            'atom': self.other_functions.atom,
-            'quote': self.other_functions.quote,
-            'eval': self.other_functions.eval_function,
-        }
+        self.functions = LispFunctions.define_operators()
 
     def run_program(self):
         """Reads the code in file name, parses it, and executes each
@@ -63,9 +31,9 @@ class LispInterpreter(object):
                     whole = f'{whole}{self.space_out(line)}'
             return whole
 
-    ########################################################################
+    ########
     # SYNTAX
-    ########################################################################
+    ########
     def parse_program(self, program_string):
         """
         Takes a string that represents a program, multiple statements
@@ -149,7 +117,7 @@ class LispInterpreter(object):
 
         lisp_function = code[0]
         if lisp_function in self.functions:
-            return self.functions[lisp_function](code, bindings, depth)
+            return self.functions[lisp_function](self, code, bindings, depth)
 
         return self.eval_user_function(code[0], code[1:], bindings, depth + 1)
 
@@ -229,7 +197,6 @@ class LispInterpreter(object):
             print(self.log_buffer(depth) + message)
 
 
-########################################################################
 if __name__ == '__main__':
     sys.setrecursionlimit(10 ** 5)  # Increase the recursion limit
 
