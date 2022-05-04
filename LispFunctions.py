@@ -167,7 +167,7 @@ def eval_function(interpreter, code, bindings, depth):
 
 
 def define_operators():
-    lisp_functions = {
+    return {
         '+': addition,
         '-': subtraction,
         '*': multiplication,
