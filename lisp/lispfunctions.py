@@ -1,3 +1,32 @@
+def define_operators():
+    """Maps Lisp the operators to the appropriate functions"""
+    return {
+        '+': addition,
+        '-': subtraction,
+        '*': multiplication,
+        '/': integer_division,
+        'mod': modulo,
+        'if': conditional,
+        'not': not_function,
+        'and': and_function,
+        'or': or_function,
+        '=': equals,
+        '/=': not_equals,
+        '<': less_than,
+        '>': greater_than,
+        '<=': less_than_or_equals,
+        '>=': greater_than_or_equals,
+        'car': car,
+        'cdr': cdr,
+        'cons': cons,
+        'last': last,
+        'reverse': reverse,
+        'atom': atom,
+        'quote': quote,
+        'eval': eval_function,
+    }
+
+
 # Numerical functions
 def addition(interpreter, code, bindings, depth):
     return (
@@ -164,31 +193,3 @@ def eval_function(interpreter, code, bindings, depth):
             interpreter.eval_lisp(code[1], bindings, depth + 1)
         )
     )
-
-
-def define_operators():
-    return {
-        '+': addition,
-        '-': subtraction,
-        '*': multiplication,
-        '/': integer_division,
-        'mod': modulo,
-        'if': conditional,
-        'not': not_function,
-        'and': and_function,
-        'or': or_function,
-        '=': equals,
-        '/=': not_equals,
-        '<': less_than,
-        '>': greater_than,
-        '<=': less_than_or_equals,
-        '>=': greater_than_or_equals,
-        'car': car,
-        'cdr': cdr,
-        'cons': cons,
-        'last': last,
-        'reverse': reverse,
-        'atom': atom,
-        'quote': quote,
-        'eval': eval_function,
-    }

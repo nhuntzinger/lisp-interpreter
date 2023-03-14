@@ -13,12 +13,5 @@ if __name__ == '__main__':
         print('Usage: python3 -m lisp <filepath> [--debug]')
     else:
         path = pathlib.Path(sys.argv[1])
-        if path.suffix != '.lisp' and path.suffix != '.lsp':
-            print('Error: File must have .lisp or .lsp extension')
-            sys.exit(1)
-        if not path.exists():
-            print(f'Error: File `{path}` does not exist')
-            sys.exit(1)
-
         interpreter = interpreter.LispInterpreter(path=path, debug=debug)
         interpreter.run_program()

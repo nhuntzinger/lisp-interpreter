@@ -1,3 +1,4 @@
+import sys
 from functools import lru_cache
 
 from . import lispfunctions
@@ -21,13 +22,19 @@ class LispInterpreter(object):
         """reads in a lisp program, returns as one big string"""
         print(f'Reading `{self.path.absolute()}`')
 
+        if not self.path.exists():
+            print(f'Could not find `{self.path.absolute()}`')
+            sys.exit(1)
+
         with self.path.open('r') as lisp_file:
-            whole = ''
+            complete_program = []
+
+            lisp_comment_symbol = ';'
             for line in lisp_file:
-                # ignore comment lines
-                if not line.lstrip().startswith(';'):
-                    whole = f'{whole}{self.space_out(line)}'
-            return whole
+                if not line.lstrip().startswith(lisp_comment_symbol):
+                    complete_program.append(self.space_out(line))
+
+            return ''.join(complete_program)
 
     ########
     # SYNTAX
