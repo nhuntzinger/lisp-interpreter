@@ -1,15 +1,13 @@
-import pathlib
-import sys
+from functools import lru_cache
 
-import LispFunctions
+from . import lispfunctions
 
 
 class LispInterpreter(object):
     def __init__(self, path, debug):
-        self.path = pathlib.Path.cwd().absolute() / path
+        self.path = path
         self.debug = debug
-        self.log_buffer_cache = {}
-        self.functions = LispFunctions.define_operators()
+        self.functions = lispfunctions.define_operators()
 
     def run_program(self):
         """Reads the code in file name, parses it, and executes each
@@ -21,7 +19,7 @@ class LispInterpreter(object):
 
     def read_file(self):
         """reads in a lisp program, returns as one big string"""
-        print(f'Reading `{self.path}`')
+        print(f'Reading `{self.path.absolute()}`')
 
         with self.path.open('r') as lisp_file:
             whole = ''
@@ -87,10 +85,10 @@ class LispInterpreter(object):
             self.eval_lisp_block(block[1:], binding)
 
     def eval_lisp(self, code, bindings=[], depth=0):
-        """Evaluates the code with the bindings so far
-        bindings is a list of dictionaries, each with a mapping from a symbol
-        to its value. These are generated from def statements, and when
-        a user-defined function is called
+        """Evaluates the code with the bindings so far bindings is a list of
+        dictionaries, each with a mapping from a symbol to its value. These are
+        generated from def statements, and when a user-defined function is
+        called
         """
         if self.debug or depth == 0:
             print(f'{self.log_buffer(depth)}Eval {self.to_string(code)}')
@@ -183,30 +181,14 @@ class LispInterpreter(object):
             string = string + self.to_string(item)
         return string.rstrip(' ') + ')'
 
+    @lru_cache(maxsize=32)
     def log_buffer(self, depth):
-        """Creates a string of spaces and a pipe to use for indenting
-        debug output
+        """Creates a string of spaces and a pipe to use for indenting debug
+        output
         """
-        if depth not in self.log_buffer_cache:
-            self.log_buffer_cache[depth] = '|  ' * depth
-        return self.log_buffer_cache[depth]
+        return '|  ' * depth
 
     def log(self, depth, message):
         """Prints a debug message"""
         if self.debug:
             print(self.log_buffer(depth) + message)
-
-
-if __name__ == '__main__':
-    sys.setrecursionlimit(10 ** 5)  # Increase the recursion limit
-
-    if len(sys.argv) > 2:
-        interpreter = LispInterpreter(path=sys.argv[1], debug=True)
-        interpreter.run_program()
-
-    elif len(sys.argv) > 1 and sys.argv[1] != '--help' and sys.argv[1] != '-h':
-        interpreter = LispInterpreter(path=sys.argv[1], debug=False)
-        interpreter.run_program()
-
-    else:
-        print('Usage: python3 lisp.py <filepath> [--debug]')
